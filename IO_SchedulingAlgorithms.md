@@ -1,191 +1,145 @@
 
+### What is I/O Scheduling?
 
-### I/O Scheduling Overview
-
-**I/O scheduling** is crucial for improving the performance of a system, especially when handling multiple I/O requests simultaneously. It determines the order in which the operating system processes these requests, balancing fairness and efficiency.
-
-#### Key Components in Disk I/O:
-
-1. **Seek Time**:
-   - The time taken for the disk's read/write head to move to the track containing the requested data.
-   
-   **Formula**:
-   \[
-   \text{Seek Time} = \text{Number of tracks crossed} \times \text{Time per track}
-   \]
-   - Where the time per track is the time it takes the head to move from one track to an adjacent track.
-
-2. **Rotational Latency**:
-   - The time it takes for the disk to rotate and position the correct sector under the read/write head.
-   
-   **Formula**:
-   \[
-   \text{Rotational Latency} = \frac{1}{2 \times \text{Rotational Speed}}
-   \]
-   - Typically, rotational latency is calculated as half the time for one complete rotation, assuming the disk may be anywhere during its rotation when the request arrives.
-   - **Example**: If the disk spins at 7200 RPM (rotations per minute):
-     \[
-     \text{Rotational Speed} = \frac{7200}{60} = 120 \text{ rotations per second}
-     \]
-     So, the rotational latency will be:
-     \[
-     \text{Rotational Latency} = \frac{1}{2 \times 120} = 4.17 \text{ milliseconds}
-     \]
-
-3. **Data Transfer Time**:
-   - The time taken to actually transfer the data once the head is in position.
-
-   **Formula**:
-   \[
-   \text{Transfer Time} = \frac{\text{Data Size}}{\text{Transfer Rate}}
-   \]
-   - Where the transfer rate is typically given in megabytes per second (MBps).
-
-4. **Total I/O Time**:
-   - The total time to complete an I/O operation is the sum of seek time, rotational latency, and transfer time.
-   
-   **Formula**:
-   \[
-   \text{Total I/O Time} = \text{Seek Time} + \text{Rotational Latency} + \text{Transfer Time}
-   \]
+#### Definition:
+I/O scheduling is the method by which operating systems decide the order in which input/output requests (like disk read/write operations) are executed. Since multiple processes often require I/O operations simultaneously, I/O scheduling helps in managing these requests efficiently to ensure fair use of resources and to optimize system performance.
 
 ---
 
-### I/O Scheduling Algorithms
+### Key Objectives of I/O Scheduling:
 
-1. **First-Come, First-Served (FCFS) Scheduling**:
-   #### Concept:
-    - The simplest I/O scheduling algorithm.
-    - It processes I/O requests in the order they arrive without reordering or prioritizing.
-    - This can be inefficient, especially for disk-based operations, as it may result in high seek time.
-
-     - **Advantages**: Simple to implement, fair in terms of request order.
-     - **Disadvantages**: Long seek times due to random head movements.
-   
-   **Example**:
-   - Requests: 98, 183, 37, 122, 14, 124, 65, 67
-   - Initial head position: 53
-   - Head movement path: 53 → 98 → 183 → 37 → 122 → 14 → 124 → 65 → 67
-   - Total head movement (seek time): (98 - 53) + (183 - 98) + (183 - 37) + ... = High total seek time due to random movement.
+1. **Maximizing Throughput**: The system should complete as many I/O operations as possible in a given time.
+2. **Minimizing Latency/Response Time**: The delay between the I/O request and the start of its execution should be minimized.
+3. **Minimizing Seek Time**: For disk operations, seek time (the time the disk head takes to move to the correct location) should be minimized.
+4. **Fairness**: All processes should have fair access to I/O resources. No process should be starved (left waiting indefinitely).
+5. **Efficient Resource Utilization**: The system should make effective use of I/O devices, ensuring they are not idle unnecessarily.
 
 ---
 
-2. **Shortest Seek Time First (SSTF) Scheduling**:
+### Important Concepts in I/O Scheduling
 
-   - Always processes the I/O request closest to the current head position to minimize seek time.
-   - **Advantages**: Lower seek time compared to FCFS.
-   - **Disadvantages**: Starvation risk for faraway requests (they may never get serviced).
-   
-   **Formula for Seek Time**:
-   \[
-   \text{Seek Time} = |\text{current head position} - \text{request position}|
-   \]
+1. **Seek Time**: This is the time it takes for the disk’s read/write head to move to the correct position on the disk where the data resides. Minimizing seek time is crucial for optimizing disk performance.
 
-   **Example**:
-   - Requests: 98, 183, 37, 122, 14, 124, 65, 67
-   - Initial head position: 53
-   - Closest request: 65 (so the disk services this request first)
-   - Head movement: 53 → 65 → 67 → 37 → 14 → 98 → 122 → 124 → 183
-   - Total seek time is reduced compared to FCFS.
+2. **Rotational Latency**: Once the head is positioned at the correct track, the disk must rotate so that the required sector comes under the read/write head. The time taken for this rotation is called rotational latency.
+
+3. **Transfer Time**: After the seek and rotational latency, the actual transfer of data between the disk and memory occurs, which is the transfer time.
+
+4. **Throughput**: The number of I/O operations the system can perform in a given time. Higher throughput generally indicates better system performance.
+
+5. **Starvation**: This occurs when certain I/O requests are delayed indefinitely because other requests are continuously prioritized over them.
 
 ---
 
-3. **SCAN (Elevator Algorithm)**:
+### Detailed Explanation of I/O Scheduling Algorithms
 
-   #### Concept:
-  - The disk head moves in one direction, fulfilling requests until it reaches the end of the disk, then reverses direction.
-  - It works like an elevator: it goes in one direction picking up all requests, then reverses and picks up requests in the opposite direction.
-   - **Advantages**: Prevents starvation and reduces the back-and-forth head movement.
-   - **Disadvantages**: Long wait time for requests just behind the head after it starts moving in one direction.
-   
-   **Formula for Seek Time** (in one direction):
-   \[
-   \text{Total Seek Time} = |\text{start position} - \text{furthest request in direction}|
-   \]
-   
-   **Example**:
-   - Requests: 98, 183, 37, 122, 14, 124, 65, 67
-   - Initial head position: 53
-   - Head moves in one direction, servicing requests until it reaches the furthest (183 in this case).
-   - Movement: 53 → 65 → 67 → 98 → 122 → 124 → 183, then reverses back to service requests like 37, 14.
-   - Total head movement is more efficient than FCFS.
+Let’s start from the basic algorithms, with more emphasis on their advantages and disadvantages.
 
 ---
 
-4. **C-SCAN (Circular SCAN)**:
-   #### Concept:
-  - Similar to SCAN, but instead of reversing direction, the disk head returns to the beginning of the disk (the lowest-numbered cylinder) and then starts servicing requests in one direction again.
+### 1. **First-Come, First-Served (FCFS) Scheduling**
 
-   - **Advantages**: More uniform wait times, as the head always services requests in one direction.
-   - **Disadvantages**: Jumping back to the start introduces a delay.
-   
-   **Example**:
-   - Requests: 98, 183, 37, 122, 14, 124, 65, 67
-   - Initial head position: 53
-   - Head services: 65 → 67 → 98 → 122 → 124 → 183, then jumps back to 0 and continues.
-   - This reduces the inefficiencies of reversing direction.
+#### Working:
+- This algorithm processes I/O requests in the order they arrive, like a queue (FIFO — First-In, First-Out).
+- Simple to implement but can be inefficient for hard disk I/O operations as it doesn’t consider the position of the disk head.
 
----
+#### Pros:
+- Simple and easy to implement.
+- Fair in the sense that it doesn’t prioritize any request over others.
+  
+#### Cons:
+- **Long seek times**: Since requests are processed in arrival order, the disk head may need to travel long distances between requests, resulting in high seek times.
+- **Poor performance for disk I/O**: The order of the requests may cause unnecessary movement of the disk arm, reducing overall system performance.
 
-5. **LOOK Scheduling**:
-   #### Concept:
-  - LOOK is similar to SCAN, but instead of going to the end of the disk, it only goes as far as the last request in each direction before reversing.
-
-   - **Advantages**: More efficient than SCAN since it doesn't travel to the edge of the disk if there are no requests.
-   - **Disadvantages**: Long wait times for requests near the beginning if the head has just passed them.
-
-   **Example**:
-   - Requests: 98, 183, 37, 122, 14, 124, 65, 67
-   - Initial head position: 53
-   - Head only moves as far as the furthest request in the current direction, servicing: 65 → 67 → 98 → 122 → 124 → 183, then reverses to service 37 → 14.
+#### Example:
+For the requests **98, 183, 37, 122, 14, 124, 65, 67**, starting from disk head position **53**, the disk head moves back and forth across the disk without considering optimal paths, leading to inefficiency.
 
 ---
 
-6. **C-LOOK Scheduling**:
-   #### Concept:
-  - C-LOOK is a variation of LOOK, where the head only moves to the last request in one direction, then jumps back to the start and services requests in one direction again.
-  - Like C-SCAN, it avoids unnecessary movement, but doesn’t return to the first cylinder.
+### 2. **Shortest Seek Time First (SSTF) Scheduling**
 
-   - **Advantages**: Offers more fairness in scheduling requests, especially for those closer to the start of the disk.
-   - **Disadvantages**: Introduces delays when the head jumps back to the start.
-
-   **Example**:
-   - Requests: 98, 183, 37, 122, 14, 124, 65, 67
-   - Initial head position: 53
-   - Head services: 65 → 67 → 98 → 122 → 124 → 183, then jumps back to the smallest request and continues with 14 → 37.
-
----
-
-### Summary of Important Formulas:
-
-1. **Seek Time**:
-   \[
-   \text{Seek Time} = \text{Number of tracks crossed} \times \text{Time per track}
-   \]
-
-2. **Rotational Latency**:
-   \[
-   \text{Rotational Latency} = \frac{1}{2 \times \text{Rotational Speed (in rotations per second)}}
-   \]
-
-3. **Transfer Time**:
-   \[
-   \text{Transfer Time} = \frac{\text{Data Size}}{\text{Transfer Rate}}
-   \]
-
-4. **Total I/O Time**:
-   \[
-   \text{Total I/O Time} = \text{Seek Time} + \text{Rotational Latency} + \text{Transfer Time}
-   \]
+#### Working:
+- SSTF selects the I/O request that is closest to the current disk head position. This minimizes seek time for each individual request.
+  
+#### Pros:
+- Reduces seek time significantly compared to FCFS.
+  
+#### Cons:
+- **Starvation**: Requests far away from the disk head can be delayed indefinitely if new closer requests keep coming in. This is known as **starvation** or **indefinite blocking**.
+  
+#### Example:
+If the disk requests are **98, 183, 37, 122, 14, 124, 65, 67** and the head is at **53**, SSTF will first process the closest request, **65**, followed by **67**, then **37**, etc. While this reduces seek time, it may cause requests at positions like **183** to wait a long time if closer requests keep arriving.
 
 ---
 
-### Summary of Key Points:
-- **FCFS**: Simplest, processes in order of arrival.
-- **SSTF**: Shortest seek time first, prioritizes closer requests.
-- **SCAN**: Elevator-like, moves in one direction then reverses.
-- **C-SCAN**: Moves in one direction, jumps back to start.
-- **LOOK**: Like SCAN but doesn’t go to the edge of the disk.
-- **C-LOOK**: Like C-SCAN, only goes as far as the last request, then jumps back.
+### 3. **SCAN (Elevator Algorithm)**
 
-These are the key formulas and explanations for I/O scheduling and its algorithms. 
+#### Working:
+- SCAN moves the disk head in one direction, servicing all requests on the way, until it reaches the end of the disk. Once at the end, it reverses direction and services requests in the opposite direction. 
+- It’s called the **elevator algorithm** because it behaves similarly to an elevator in a building, going in one direction and then reversing.
+
+#### Pros:
+- **Prevents starvation**: All requests will eventually be serviced.
+- **More efficient**: Reduces the overall movement of the disk head compared to FCFS and SSTF.
+
+#### Cons:
+- **Long wait time for some requests**: If a request just missed the head, it must wait for the head to reverse direction and come back, potentially resulting in long wait times.
+
+#### Example:
+Consider the requests **98, 183, 37, 122, 14, 124, 65, 67**, and the head starts at **53** and moves upward. SCAN will process **65 → 67 → 98 → 122 → 124 → 183**, and then it reverses to service **37 → 14**. This reduces unnecessary movement across the disk.
+
+---
+
+### 4. **C-SCAN (Circular SCAN)**
+
+#### Working:
+- C-SCAN is similar to SCAN, but instead of reversing direction, the disk head moves back to the start (cylinder 0) after reaching the end and starts servicing requests again in one direction.
+  
+#### Pros:
+- **Uniform waiting time**: By always servicing requests in one direction, the algorithm ensures that waiting times are more predictable and uniform.
+
+#### Cons:
+- **Longer seeks for some requests**: As the head jumps back to the start instead of reversing, some requests can experience longer delays.
+
+#### Example:
+For the same requests **98, 183, 37, 122, 14, 124, 65, 67**, starting at **53**, C-SCAN will service **65 → 67 → 98 → 122 → 124 → 183**, then jump back to cylinder 0 and service the remaining requests **14 → 37**. It offers fairness, but the jump back to the start can introduce delays.
+
+---
+
+### 5. **LOOK Scheduling**
+
+#### Working:
+- LOOK is a variation of SCAN, where instead of going all the way to the end of the disk, the disk head only goes as far as the last request in the current direction before reversing.
+
+#### Pros:
+- **More efficient than SCAN**: It avoids unnecessary movement by not going all the way to the edge of the disk if no requests are there.
+- **Prevents starvation**: All requests will be serviced in both directions.
+
+#### Example:
+With the same requests **98, 183, 37, 122, 14, 124, 65, 67**, starting at **53**, LOOK will service **65 → 67 → 98 → 122 → 124 → 183**, then reverse and process **37 → 14**. Unlike SCAN, it doesn't go all the way to the edge (if there are no more requests after 183).
+
+---
+
+### 6. **C-LOOK Scheduling**
+
+#### Working:
+- Similar to LOOK, but instead of reversing direction, the head moves back to the start (lowest request) and begins processing again. This avoids unnecessary movement and ensures fairness.
+  
+#### Pros:
+- **Fairer than LOOK**: Requests are handled in both directions, ensuring more uniform waiting times.
+  
+#### Example:
+Starting from **53** with requests **98, 183, 37, 122, 14, 124, 65, 67**, C-LOOK will service **65 → 67 → 98 → 122 → 124 → 183**, and then jump back to the lowest request **14 → 37** to continue processing.
+
+---
+
+### Additional Considerations
+
+1. **Real-Time I/O Scheduling**:
+   - In real-time systems, where timing constraints are critical (such as embedded systems), scheduling must consider deadlines. Special algorithms like **Earliest Deadline First (EDF)** or **Rate Monotonic Scheduling (RMS)** are used.
+
+2. **Priority-Based I/O Scheduling**:
+   - Sometimes, I/O requests are prioritized based on the importance of the requesting process. High-priority requests are serviced before lower-priority ones. However, this can lead to **priority inversion**, where lower-priority processes are starved if high-priority processes constantly dominate the I/O queue.
+
+---
+
+That covers the detailed breakdown of I/O scheduling algorithms from basic to advanced concepts.
