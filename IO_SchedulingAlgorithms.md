@@ -132,6 +132,25 @@ Starting from **53** with requests **98, 183, 37, 122, 14, 124, 65, 67**, C-LOOK
 
 ---
 
+
+### **Summary of Seek Time Efficiency**
+
+| **Algorithm** | **Seek Time Efficiency** | **Key Characteristics** |
+|---------------|--------------------------|--------------------------|
+| **FCFS**      | Low                      | Simple, fair, but inefficient; can result in high seek times. |
+| **SSTF**      | Moderate to High          | Reduces seek time by servicing the nearest request but may lead to starvation. |
+| **SCAN**      | High                     | Efficient with reduced seek time and no starvation; moves in both directions. |
+| **C-SCAN**    | High                     | Fairer than SCAN, but slightly longer average seek time due to the jump back. |
+| **LOOK**      | Very High                | More efficient than SCAN; no unnecessary movement beyond the last request. |
+| **C-LOOK**    | Very High                | Most efficient; combines advantages of LOOK and C-SCAN for minimal seek time. |
+
+### **Conclusion**:
+- **C-LOOK** and **LOOK** offer the best seek time efficiency, especially for large, random I/O requests.
+- **FCFS** is the least efficient, while **SSTF** is better but prone to starvation.
+- **SCAN** and **C-SCAN** provide a good balance between performance and fairness, with C-SCAN offering more uniform wait times.
+
+For systems where minimizing seek time is critical, **C-LOOK** or **LOOK** are the best choices.
+
 ### Additional Considerations
 
 1. **Real-Time I/O Scheduling**:
@@ -140,6 +159,3 @@ Starting from **53** with requests **98, 183, 37, 122, 14, 124, 65, 67**, C-LOOK
 2. **Priority-Based I/O Scheduling**:
    - Sometimes, I/O requests are prioritized based on the importance of the requesting process. High-priority requests are serviced before lower-priority ones. However, this can lead to **priority inversion**, where lower-priority processes are starved if high-priority processes constantly dominate the I/O queue.
 
----
-
-That covers the detailed breakdown of I/O scheduling algorithms from basic to advanced concepts.
