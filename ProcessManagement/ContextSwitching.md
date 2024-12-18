@@ -1,7 +1,5 @@
 **Context Switching in an Operating System**
 
-### Overview of Operating System
-An **Operating System (OS)** is a system software that manages hardware resources and provides an interface between the user and computer hardware. It facilitates the execution of all other application programs and ensures efficient system resource utilization.
 
 ### What is Context Switching in an Operating System?
 **Context switching** in an operating system involves saving the current state (context) of a running process so it can be resumed later, and loading the context of another process to execute it. This mechanism allows multiple processes to share the CPU and other resources efficiently.
