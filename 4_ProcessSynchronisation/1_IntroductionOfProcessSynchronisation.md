@@ -113,32 +113,6 @@ A lock mechanism where a thread continuously checks for lock availability, causi
 
 ---
 
-### **Deadlock Handling**
-
-#### **Four Necessary Conditions for Deadlock** (Coffman’s Conditions):
-1. **Mutual Exclusion**: Resources cannot be shared.
-2. **Hold and Wait**: Processes hold resources while waiting for others.
-3. **No Preemption**: Resources cannot be forcibly taken.
-4. **Circular Wait**: A circular chain of processes exists, each waiting for a resource held by the next.
-
-#### **Deadlock Prevention**
-- Ensure one of the Coffman conditions is not satisfied.
-- Example: Require processes to request all resources at once.
-
-#### **Deadlock Avoidance**
-- Use dynamic resource allocation strategies.
-- **Banker’s Algorithm**:
-  - Checks system’s safety state before granting resources.
-  - Ensures that processes can finish execution safely.
-
-#### **Deadlock Detection and Recovery**
-- Periodically check for deadlocks using resource allocation graphs.
-- Recover by:
-  - Terminating processes.
-  - Preempting resources.
-
----
-
 ### **Advanced Topics in Synchronization**
 
 #### **Lock-free and Wait-free Algorithms**
@@ -166,14 +140,6 @@ Occurs when processes share a cache line, leading to performance degradation. Pr
 | Mutex             | Yes              | Yes           | Moderate       | Deadlocks              |
 | Semaphore         | Yes              | Depends       | Low/Moderate   | Priority inversion     |
 | Monitors          | Yes              | Yes           | Low            | Language dependency    |
-
----
-
-### **Key Points for Competitive Exams**
-1. Understand differences between mutexes, semaphores, and monitors.
-2. Focus on the implementation and limitations of Peterson’s Algorithm and Banker’s Algorithm.
-3. Study real-world applications like thread pools, transaction systems, and distributed computing.
-4. Familiarize yourself with advanced concepts like priority inversion, false sharing, and lock-free algorithms.
 
 ---
 
