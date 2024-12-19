@@ -27,16 +27,19 @@ Process synchronization is a mechanism to control the access of multiple process
 Occurs when multiple processes access shared resources simultaneously, leading to unpredictable outcomes due to the sequence of execution.
 
 #### **Semaphore**
-A synchronization tool used to manage access to shared resources.
+A semaphore is a synchronization tool used to manage access to shared resources.
 - **Types**:
   - **Binary Semaphore**: Takes values 0 or 1, similar to a mutex.
   - **Counting Semaphore**: Takes non-negative values and is used to manage a resource pool.
-- Operations:
+- **Operations:**
   - **wait()**: Decrements the semaphore value.
   - **signal()**: Increments the semaphore value.
 
 #### **Deadlock**
 A situation where processes are waiting indefinitely for resources held by one another. Deadlock prevention, avoidance, and detection strategies are essential in synchronization.
+
+#### **Spinlock**
+A lock mechanism where a thread continuously checks for lock availability, causing busy waiting. It is efficient for short wait times but not scalable.
 
 ---
 
@@ -110,6 +113,32 @@ A situation where processes are waiting indefinitely for resources held by one a
 
 ---
 
+### **Deadlock Handling**
+
+#### **Four Necessary Conditions for Deadlock** (Coffman’s Conditions):
+1. **Mutual Exclusion**: Resources cannot be shared.
+2. **Hold and Wait**: Processes hold resources while waiting for others.
+3. **No Preemption**: Resources cannot be forcibly taken.
+4. **Circular Wait**: A circular chain of processes exists, each waiting for a resource held by the next.
+
+#### **Deadlock Prevention**
+- Ensure one of the Coffman conditions is not satisfied.
+- Example: Require processes to request all resources at once.
+
+#### **Deadlock Avoidance**
+- Use dynamic resource allocation strategies.
+- **Banker’s Algorithm**:
+  - Checks system’s safety state before granting resources.
+  - Ensures that processes can finish execution safely.
+
+#### **Deadlock Detection and Recovery**
+- Periodically check for deadlocks using resource allocation graphs.
+- Recover by:
+  - Terminating processes.
+  - Preempting resources.
+
+---
+
 ### **Advanced Topics in Synchronization**
 
 #### **Lock-free and Wait-free Algorithms**
@@ -140,7 +169,17 @@ Occurs when processes share a cache line, leading to performance degradation. Pr
 
 ---
 
+### **Key Points for Competitive Exams**
+1. Understand differences between mutexes, semaphores, and monitors.
+2. Focus on the implementation and limitations of Peterson’s Algorithm and Banker’s Algorithm.
+3. Study real-world applications like thread pools, transaction systems, and distributed computing.
+4. Familiarize yourself with advanced concepts like priority inversion, false sharing, and lock-free algorithms.
+
+---
+
 ### **Conclusion**
 Process synchronization is fundamental to maintaining consistency and efficiency in concurrent systems. Understanding various synchronization mechanisms, their applications, and their limitations is crucial for solving real-world problems and acing competitive exams.
+
+
 
 **GFG Link :** https://www.geeksforgeeks.org/introduction-of-process-synchronization/?ref=lbp
