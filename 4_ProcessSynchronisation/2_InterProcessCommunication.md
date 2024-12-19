@@ -118,3 +118,5 @@ Interprocess Communication (IPC) refers to the mechanisms that allow processes t
    - Essential for networking-based IPC, supporting TCP and UDP communication.
 
 ---
+
+**GFG Link :** https://www.geeksforgeeks.org/inter-process-communication-ipc/
